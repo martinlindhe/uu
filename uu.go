@@ -3,6 +3,7 @@ package uu
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -27,27 +28,30 @@ type Decoded struct {
 
 // Decode decodes UUencoded text
 func Decode(data []byte) (*Decoded, error) {
-	rows := strings.Split(string(data), "\n")
 	dec := &Decoded{}
-	if string(strings.Split(rows[0], " ")[0]) != "begin" {
-		return nil, fmt.Errorf("invalid format")
+	if len(data) < 2 {
+		return dec, errors.New("invalid decode input")
+	}
+	rows := strings.Split(string(data), "\n")
+	if strings.Split(rows[0], " ")[0] != "begin" {
+		return dec, errors.New("invalid format")
 	}
 
-	if string(strings.Split(rows[0], " ")[1]) == " " || string(strings.Split(rows[0], " ")[1]) == "" {
-		return nil, fmt.Errorf("invalid file permissions")
+	if strings.Split(rows[0], " ")[1] == " " || strings.Split(rows[0], " ")[1] == "" {
+		return dec, errors.New("invalid file permissions")
 	}
 	dec.Mode = strings.Split(rows[0], " ")[1]
 
-	if string(strings.Split(rows[0], " ")[2]) == " " || string(strings.Split(rows[0], " ")[2]) == "" {
-		return nil, fmt.Errorf("invalid filename")
+	if strings.Split(rows[0], " ")[2] == " " || strings.Split(rows[0], " ")[2] == "" {
+		return dec, errors.New("invalid filename")
 	}
 	dec.Filename = strings.Split(rows[0], " ")[2]
 
-	if string(rows[len(rows)-2]) != "end" {
-		return nil, fmt.Errorf("invalid format: no 'end' marker found")
+	if rows[len(rows)-2] != "end" {
+		return dec, errors.New("invalid format: no 'end' marker found")
 	}
-	if string(rows[len(rows)-3]) != "`" {
-		return nil, fmt.Errorf("invalid ending format")
+	if rows[len(rows)-3] != "`" {
+		return dec, errors.New("invalid ending format")
 	}
 
 	rows = rows[1 : len(rows)-3]
@@ -72,6 +76,10 @@ func DecodeBlock(rows []string) ([]byte, error) {
 
 // DecodeLine decodes a single line of uuencoded text
 func DecodeLine(s string) ([]byte, error) {
+	if len(s) < 2 {
+		return nil, errors.New("invalid line input")
+	}
+
 	// fix up non-standard padding `, to make golang's base64 not freak out
 	s = strings.Replace(s, "`", " ", -1)
 
@@ -80,6 +88,9 @@ func DecodeLine(s string) ([]byte, error) {
 	res, err := encoding.DecodeString(s[1:])
 	if err != nil {
 		return res, err
+	}
+	if len(res) < int(l) {
+		return nil, errors.New("line decoding failed")
 	}
 	return res[0:l], nil
 }

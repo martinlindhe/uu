@@ -4,10 +4,12 @@ import (
 	"strings"
 	"testing"
 
+	fuzz "github.com/google/gofuzz"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
+	fuzzRounds   = 10000
 	encodedLine1 = `K5&AE('%U:6-K(&)R;W=N(&9O>"!J=6UP<R!O=F5R('1H92!L87IY(&1O9P  `
 	mode1        = "644"
 	file1        = `stuff.txt`
@@ -38,7 +40,10 @@ var (
 		strings.Join(encodedBlock3, "\n") + "\n" +
 		"`\n" +
 		"end\n"
-	clear3 = `The name "uuencoding" is derived from "Unix-to-Unix encoding", i.e. the idea of using a safe encoding to transfer Unix files from one Unix system to another Unix system but without guarantee that the intervening links would all be Unix systems.`
+	clear3 = `The name "uuencoding" is derived from "Unix-to-Unix encoding",` +
+		` i.e. the idea of using a safe encoding to transfer Unix files from one` +
+		` Unix system to another Unix system but without guarantee that the` +
+		` intervening links would all be Unix systems.`
 )
 
 func TestEncode(t *testing.T) {
@@ -83,4 +88,31 @@ func TestDecodeBlock(t *testing.T) {
 	out, err = DecodeBlock(encodedBlock3)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, clear3, string(out))
+}
+
+func TestFuzzDecode(t *testing.T) {
+	f := fuzz.New()
+	for i := 0; i < fuzzRounds; i++ {
+		rnd := ""
+		f.Fuzz(&rnd)
+		Decode([]byte(rnd))
+	}
+}
+
+func TestFuzzDecodeBlock(t *testing.T) {
+	f := fuzz.New()
+	for i := 0; i < fuzzRounds; i++ {
+		rnd := ""
+		f.Fuzz(&rnd)
+		DecodeBlock([]string{rnd})
+	}
+}
+
+func TestFuzzDecodeLine(t *testing.T) {
+	f := fuzz.New()
+	for i := 0; i < fuzzRounds; i++ {
+		rnd := ""
+		f.Fuzz(&rnd)
+		DecodeLine(rnd)
+	}
 }
