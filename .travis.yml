@@ -1,8 +1,13 @@
 language: go
 
 go:
+  - 1.8
   - 1.9
   - tip
+
+matrix:
+  allow_failures:
+  - go: 1.8
 
 before_install:
   - go get github.com/onsi/gomega
