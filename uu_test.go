@@ -17,6 +17,10 @@ var (
 		encodedLine1 + "\n" +
 		"`\n" +
 		"end\n"
+	encoded1b = `begin ` + mode1 + ` ` + file1 + "\n" +
+		encodedLine1 + "\n" +
+		" \n" +
+		"end\n"
 	clear1 = `The quick brown fox jumps over the lazy dog`
 
 	encodedBlock2 = []string{
@@ -58,6 +62,12 @@ func TestEncode(t *testing.T) {
 
 func TestDecode(t *testing.T) {
 	out, err := Decode([]byte(encoded1))
+	assert.Equal(t, nil, err)
+	assert.Equal(t, file1, out.Filename)
+	assert.Equal(t, clear1, string(out.Data))
+	assert.Equal(t, mode1, out.Mode)
+
+	out, err = Decode([]byte(encoded1b))
 	assert.Equal(t, nil, err)
 	assert.Equal(t, file1, out.Filename)
 	assert.Equal(t, clear1, string(out.Data))
