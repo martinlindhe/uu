@@ -15,7 +15,7 @@ const (
 )
 
 var (
-	encoding = NewEncoding(UUAlphabet)
+	encoding = NewEncoding(UUAlphabet).WithPadding(NoPadding)
 )
 
 // Decoded holds result from uuencoded decode

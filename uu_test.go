@@ -10,7 +10,7 @@ import (
 
 var (
 	fuzzRounds   = 10000
-	encodedLine1 = `K5&AE('%U:6-K(&)R;W=N(&9O>"!J=6UP<R!O=F5R('1H92!L87IY(&1O9P  `
+	encodedLine1 = `K5&AE('%U:6-K(&)R;W=N(&9O>"!J=6UP<R!O=F5R('1H92!L87IY(&1O9P`
 	mode1        = "644"
 	file1        = `stuff.txt`
 	encoded1     = `begin ` + mode1 + ` ` + file1 + "\n" +
