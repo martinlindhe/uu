@@ -5,6 +5,9 @@ import (
 	"testing"
 
 	fuzz "github.com/google/gofuzz"
+	"github.com/leanovate/gopter"
+	"github.com/leanovate/gopter/gen"
+	"github.com/leanovate/gopter/prop"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -125,4 +128,25 @@ func TestFuzzDecodeLine(t *testing.T) {
 		f.Fuzz(&rnd)
 		DecodeLine(rnd)
 	}
+}
+
+func TestRountTrip(t *testing.T) {
+	props := gopter.NewProperties(gopter.DefaultTestParameters())
+	props.Property("UU Roundtrip", prop.ForAll(
+		func(v string) bool {
+			filename := "<data>"
+			mode := "0666"
+			encoded, err := Encode([]byte(v), filename, mode)
+			if err != nil {
+				return false
+			}
+			decoded, err := Decode(encoded)
+			if err != nil {
+				return false
+			}
+			return v == string(decoded.Data) && decoded.Filename == filename && decoded.Mode == mode
+		},
+		gen.AnyString(),
+	))
+	props.TestingRun(t)
 }
