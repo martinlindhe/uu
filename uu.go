@@ -49,7 +49,7 @@ func Decode(data []byte) (*Decoded, error) {
 	if rows[len(rows)-2] != "end" {
 		return dec, errors.New("invalid format: no 'end' marker found")
 	}
-	if !(rows[len(rows)-3] == "`" || rows[len(rows)-3] == " ") {
+	if rows[len(rows)-3] != "`" && rows[len(rows)-3] != " " {
 		return dec, errors.New("invalid ending format")
 	}
 
