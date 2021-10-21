@@ -59,32 +59,32 @@ var (
 
 func TestEncode(t *testing.T) {
 	out, err := Encode([]byte(clear1), file1, mode1)
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, encoded1, string(out))
 
 	out, err = Encode([]byte{}, file1, mode1)
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, "begin 644 stuff.txt\n`\nend\n", string(out))
 }
 
 func TestDecode(t *testing.T) {
 	out, err := Decode([]byte(encoded1))
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, file1, out.Filename)
 	assert.Equal(t, clear1, string(out.Data))
 	assert.Equal(t, mode1, out.Mode)
 
 	out, err = Decode([]byte(encoded1b))
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, file1, out.Filename)
 	assert.Equal(t, clear1, string(out.Data))
 	assert.Equal(t, mode1, out.Mode)
 
-	out, err = Decode([]byte(encoded1c))
+	_, err = Decode([]byte(encoded1c))
 	assert.Error(t, err)
 
 	out, err = Decode([]byte(encoded3))
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, file3, out.Filename)
 	assert.Equal(t, clear3, string(out.Data))
 	assert.Equal(t, mode3, out.Mode)
@@ -92,21 +92,21 @@ func TestDecode(t *testing.T) {
 
 func TestDecodeLine(t *testing.T) {
 	out, err := DecodeLine(encodedLine1)
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, clear1, string(out))
 }
 
 func TestDecodeBlock(t *testing.T) {
 	out, err := DecodeBlock([]string{encodedLine1})
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, clear1, string(out))
 
 	out, err = DecodeBlock(encodedBlock2)
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, clear2, string(out))
 
 	out, err = DecodeBlock(encodedBlock3)
-	assert.Equal(t, nil, err)
+	assert.Nil(t, err)
 	assert.Equal(t, clear3, string(out))
 }
 
@@ -115,7 +115,7 @@ func TestFuzzDecode(t *testing.T) {
 	for i := 0; i < fuzzRounds; i++ {
 		rnd := ""
 		f.Fuzz(&rnd)
-		Decode([]byte(rnd))
+		_, _ = Decode([]byte(rnd))
 	}
 }
 
@@ -124,7 +124,7 @@ func TestFuzzDecodeBlock(t *testing.T) {
 	for i := 0; i < fuzzRounds; i++ {
 		rnd := ""
 		f.Fuzz(&rnd)
-		DecodeBlock([]string{rnd})
+		_, _ = DecodeBlock([]string{rnd})
 	}
 }
 
@@ -133,7 +133,7 @@ func TestFuzzDecodeLine(t *testing.T) {
 	for i := 0; i < fuzzRounds; i++ {
 		rnd := ""
 		f.Fuzz(&rnd)
-		DecodeLine(rnd)
+		_, _ = DecodeLine(rnd)
 	}
 }
 

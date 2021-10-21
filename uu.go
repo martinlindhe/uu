@@ -2,6 +2,7 @@ package uu
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
@@ -15,7 +16,7 @@ const (
 )
 
 var (
-	encoding = NewEncoding(UUAlphabet).WithPadding(NoPadding)
+	encoding = base64.NewEncoding(UUAlphabet).WithPadding(base64.NoPadding)
 )
 
 // Decoded holds result from uuencoded decode
@@ -80,7 +81,7 @@ func DecodeLine(s string) ([]byte, error) {
 	}
 
 	// fix up non-standard padding `, to make golang's base64 not freak out
-	s = strings.Replace(s, "`", " ", -1)
+	s = strings.ReplaceAll(s, "`", " ")
 
 	data := []byte(s)
 	l := data[0] - 32 // length
