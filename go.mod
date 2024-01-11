@@ -1,6 +1,6 @@
 module github.com/martinlindhe/uu
 
-go 1.17
+go 1.21
 
 require (
 	github.com/google/gofuzz v1.2.0
